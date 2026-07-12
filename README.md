@@ -183,7 +183,7 @@ src/
 
 - **Node.js** >= 18
 - **npm** >= 9
-- A running backend API (see [Backend Deployment](#backend-deployment))
+- A running backend API (see [Backend Deployment](https://github.com/sumondebnath/E-Commerce-Backend-API))
 
 ### Installation
 

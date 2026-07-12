@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../config/env';
+import { VITE_API_BASE_URL } from '../config/env';
 import {
   getRefreshToken,
   setAccessToken,
@@ -11,7 +11,7 @@ import { AUTH } from './endpoints';
 import { getTokenExpiry } from '../common/utils/jwt';
 
 const refreshClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: VITE_API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -24,17 +24,15 @@ function doRefresh() {
   if (!stored) {
     throw new Error('no_refresh_token');
   }
-  return refreshClient
-    .post(AUTH.REFRESH, { refresh: stored })
-    .then((res) => {
-      if (cancelled) throw new Error('refresh_cancelled');
-      const { access, refresh } = res.data;
-      setAccessToken(access);
-      if (refresh) {
-        setRefreshToken(refresh, isRemembered());
-      }
-      return access;
-    });
+  return refreshClient.post(AUTH.REFRESH, { refresh: stored }).then((res) => {
+    if (cancelled) throw new Error('refresh_cancelled');
+    const { access, refresh } = res.data;
+    setAccessToken(access);
+    if (refresh) {
+      setRefreshToken(refresh, isRemembered());
+    }
+    return access;
+  });
 }
 
 export function requestRefresh() {

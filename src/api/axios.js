@@ -1,13 +1,13 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../config/env';
+import { VITE_API_BASE_URL } from '../config/env';
 import { getAccessToken, getRefreshToken, clearAccessToken } from './token';
 import { AUTH } from './endpoints';
 import { requestRefresh } from './refreshManager';
 
-const isSameOrigin = API_BASE_URL.startsWith(window.location.origin);
+const isSameOrigin = VITE_API_BASE_URL.startsWith(window.location.origin);
 
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: VITE_API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: isSameOrigin,
 });
@@ -52,7 +52,9 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      const isSafeMethod = ['get', 'head', 'options'].includes((originalRequest.method || 'get').toLowerCase());
+      const isSafeMethod = ['get', 'head', 'options'].includes(
+        (originalRequest.method || 'get').toLowerCase()
+      );
 
       if (isRetrying) {
         return new Promise((resolve, reject) => {

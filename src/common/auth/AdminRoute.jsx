@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import useAuth from '@/features/auth/useAuth';
 import getUserRoles from './getUserRoles';
@@ -6,19 +6,27 @@ import getUserRoles from './getUserRoles';
 export default function AdminRoute({ redirectTo = '/admin/login' }) {
   const { loading, user, logout } = useAuth();
   const [countdown, setCountdown] = useState(null);
+  const loggedOutRef = useRef(false);
 
   const roles = getUserRoles(user);
   const isAdmin = roles.includes('admin');
 
   useEffect(() => {
-    if (isAdmin || countdown === null) return;
+    if (loading || isAdmin) return;
+    if (countdown === null) {
+      setCountdown(4);
+      return;
+    }
     if (countdown <= 0) {
-      logout();
+      if (!loggedOutRef.current) {
+        loggedOutRef.current = true;
+        logout();
+      }
       return;
     }
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
-  }, [isAdmin, countdown, logout]);
+  }, [loading, isAdmin, countdown, logout]);
 
   if (loading) {
     return (
@@ -30,8 +38,7 @@ export default function AdminRoute({ redirectTo = '/admin/login' }) {
 
   if (!user) return <Navigate to={redirectTo} replace />;
 
-  if (!isAdmin && countdown === null) {
-    setCountdown(4);
+  if (!isAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
         <div className="w-full max-w-md space-y-4 text-center">
@@ -51,8 +58,6 @@ export default function AdminRoute({ redirectTo = '/admin/login' }) {
       </div>
     );
   }
-
-  if (!isAdmin) return <Navigate to="/" replace />;
 
   return <Outlet />;
 }

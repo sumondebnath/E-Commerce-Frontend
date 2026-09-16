@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Upload, X } from 'lucide-react';
 import api from '@/api/axios';
-import { PRODUCTS, CATEGORIES } from '@/api/endpoints';
+import { PRODUCTS, CATEGORIES, ADMIN } from '@/api/endpoints';
 import Input from '@/common/components/UI/Input';
 import Textarea from '@/common/components/UI/Textarea';
 import useDocumentTitle from '@/common/hooks/useDocumentTitle';
@@ -142,7 +142,7 @@ export default function AdminProductForm() {
 
   const mutation = useMutation({
     mutationFn: (formData) =>
-      isEdit ? api.patch(PRODUCTS.DETAIL(id), formData) : api.post(PRODUCTS.LIST, formData),
+      isEdit ? api.patch(ADMIN.PRODUCT_DETAIL(id), formData) : api.post(ADMIN.PRODUCTS, formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       queryClient.invalidateQueries({ queryKey: ['admin-stock'] });

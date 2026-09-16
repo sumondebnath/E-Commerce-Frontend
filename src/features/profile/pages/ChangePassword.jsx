@@ -8,7 +8,7 @@ import Input from '@/common/components/UI/Input';
 
 const schema = z
   .object({
-    old_password: z.string().min(1, 'Current password is required'),
+    current_password: z.string().min(1, 'Current password is required'),
     new_password: z.string().min(6, 'Password must be at least 6 characters'),
     new_password2: z.string().min(1, 'Please confirm your password'),
   })
@@ -20,18 +20,18 @@ const schema = z
 export default function ChangePassword() {
   const { register, handleSubmit, formState, reset } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: { old_password: '', new_password: '', new_password2: '' },
+    defaultValues: { current_password: '', new_password: '', new_password2: '' },
   });
 
   const mutation = useMutation({
-    mutationFn: (data) => changePassword(data),
+    mutationFn: ({ current_password, new_password }) => changePassword({ current_password, new_password }),
     onSuccess: () => {
       toast.success('Password changed');
       reset();
     },
     onError: (err) => {
       const data = err?.response?.data;
-      const msg = data?.detail || data?.old_password || data?.new_password || Object.values(data || {}).flat().join('. ') || 'Failed to change password';
+      const msg = data?.detail || data?.current_password || data?.new_password || Object.values(data || {}).flat().join('. ') || 'Failed to change password';
       toast.error(Array.isArray(msg) ? msg[0] : msg);
     },
   });
@@ -50,8 +50,8 @@ export default function ChangePassword() {
           label="Current password"
           type="password"
           placeholder="Current password"
-          error={formState.errors.old_password?.message}
-          {...register('old_password')}
+          error={formState.errors.current_password?.message}
+          {...register('current_password')}
         />
         <Input
           label="New password"

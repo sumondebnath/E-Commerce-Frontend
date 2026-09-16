@@ -52,10 +52,6 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      const isSafeMethod = ['get', 'head', 'options'].includes(
-        (originalRequest.method || 'get').toLowerCase()
-      );
-
       if (isRetrying) {
         return new Promise((resolve, reject) => {
           retryQueue.push({ resolve, reject });
@@ -73,9 +69,6 @@ axiosInstance.interceptors.response.use(
       try {
         const newToken = await requestRefresh();
         processRetryQueue(null, newToken);
-        if (!isSafeMethod) {
-          return Promise.reject(error);
-        }
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosInstance(originalRequest);
       } catch (err) {
